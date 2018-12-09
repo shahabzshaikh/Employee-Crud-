@@ -1,20 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { EmployeeDetailService } from '../service/employee-detail.service';
+import { Component, OnInit, Injectable } from '@angular/core';
 import { EmployeeDetail } from '../employee-detail.model';
-
+import { EmployeeDetailService } from '../../service/employee-detail.service';
 
 @Component({
   selector: 'app-view-employee',
   templateUrl: './view-employee.component.html',
   styleUrls: ['./view-employee.component.css']
 })
+
 export class ViewEmployeeComponent implements OnInit {
 
   public viewEmployeeDetails: EmployeeDetail[];
-
+  total = 0;
+  page = 1;
+  limit = 20;
   constructor(private viewEmployeeService: EmployeeDetailService) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
 
     this.getEmployee();
   }
@@ -24,19 +26,27 @@ export class ViewEmployeeComponent implements OnInit {
    * Get the data from service.
    */
   getEmployee(): void {
-    this.viewEmployeeService.getEmployeeDetail()
-    .subscribe(employee => this.viewEmployeeDetails = employee);
+
+    this.viewEmployeeService.getEmployeeDetail({ page: this.page, limit: this.limit })
+      .subscribe(res => {
+        this.total = res.total;
+        this.viewEmployeeDetails = res.viewEmployeeDetails;
+      });
   }
-  
-  /**
-   * This method are create for delete the employe Details.
-   * @param employee - The create the object of model class.
-   */
-  deleteEmployeeData(employee: EmployeeDetail): void {
-    this.viewEmployeeDetails = this.viewEmployeeDetails.filter(f => f !== employee);
-    this.viewEmployeeService.deleteEmployeeDetail(employee).subscribe(
-      (employee) => alert('Employee record successfully deleted.')
-    );
+
+  goToPage(n: number): void {
+    this.page = n;
+    this.getEmployee();
+  }
+
+  onNext(): void {
+    this.page++;
+    this.getEmployee();
+  }
+
+  onPrev(): void {
+    this.page--;
+    this.getEmployee();
   }
 
 }

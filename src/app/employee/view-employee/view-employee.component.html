@@ -1,7 +1,18 @@
+<div>list of things</div>
+<app-pagination
+  (goPage)="goToPage($event)"
+  (goNext)="onNext()"
+  (goPrev)="onPrev()"
+  [pagesToShow]="3"
+  [page]="page"
+  [perPage]="limit"
+  [count]="total">
+</app-pagination>
+  <br/>
+  
 <div class="box">
-  
   <h1 class="fancy">Employee Details Lists</h1>
-  
+
   <table id="todoList">
     <!--
       This part write the Table header.
@@ -11,23 +22,17 @@
       <th>Employee Name</th>
       <th>Age</th>
       <th>Designation</th>
-      <th>Joining Date</th>
-      <th>Action</th>
     </tr>
 
     <!--
       This is part in use of *ngFor for display the All Employee Details.
     -->
-    <tr *ngFor="let employee of viewEmployeeDetails"> 
+    <tr *ngFor="let employee of viewEmployeeDetails">
       <td>{{employee.id}}</td>
       <td>{{employee.employeeName}}</td>
       <td>{{employee.age}}</td>
       <td>{{employee.designation}}</td>
-      <td>{{employee.joiningDate | date : 'fullDate'}}</td>
-      <!--Delete the Employee Details-->
-      <td><button class="delete" title="delete employee"
-        (click)="deleteEmployeeData(employee)"><i class="fa fa-fw fa fa-trash"></i></button></td>
-    </tr> 
+    </tr>
 
   </table>
 
