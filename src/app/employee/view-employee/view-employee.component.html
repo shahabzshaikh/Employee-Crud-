@@ -1,13 +1,39 @@
-<div>list of things</div>
-<app-pagination
-  (goPage)="goToPage($event)"
-  (goNext)="onNext()"
-  (goPrev)="onPrev()"
-  [pagesToShow]="3"
-  [page]="page"
-  [perPage]="limit"
-  [count]="total">
-</app-pagination>
+<div class="controls">
+  <div>
+    <label for="per-page">
+      Per Page:
+    </label>
+    <select
+      id="per-page" 
+      (change)="onLimitChange($event.target.value)"
+    >
+      <option
+        *ngFor="let option of pageLimitOptions"
+        [value]="option.value"
+        [selected]="option.value == currentPageLimit"
+      >
+        {{ option.value }}
+      </option>
+    </select>
+  </div>
+  <div>
+    <label for="visible">
+      Visible in Paginator:
+    </label>
+    <select
+      id="visible" 
+      (change)="onVisibleChange($event.target.value)"
+    >
+      <option
+        *ngFor="let option of visibleOptions"
+        [value]="option.value"
+        [selected]="option.value == currentVisible"
+      >
+        {{ option.value }}
+      </option>
+    </select>
+  </div>
+</div>
   <br/>
   
 <div class="box">
@@ -27,7 +53,7 @@
     <!--
       This is part in use of *ngFor for display the All Employee Details.
     -->
-    <tr *ngFor="let employee of viewEmployeeDetails">
+    <tr *ngFor="let employee of viewEmployeeDetails"  #table>
       <td>{{employee.id}}</td>
       <td>{{employee.employeeName}}</td>
       <td>{{employee.age}}</td>
@@ -35,5 +61,14 @@
     </tr>
 
   </table>
+
+  <app-pagination
+        [page]="curPage"
+        [visiblePagesCount]="currentVisible"
+        [size]="pageSize"
+        [count]="rowCount"
+        [hidden]="false"
+        (change)="table.onFooterPage($event)">
+      </app-pagination>
 
 </div>

@@ -7,72 +7,127 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class PaginationComponent implements OnInit {
 
-  @Input() page: number;
-  @Input() count: number;
-  @Input() perPage: number;
-  @Input() pagesToShow: number;
+  @Input() pagerLeftArrowIcon: string = 'icon-left';
+  @Input() pagerRightArrowIcon: string = 'icon-right';
+  @Input() pagerPreviousIcon: string = 'icon-prev';
+  @Input() pagerNextIcon: string = 'icon-skip'
 
-  @Output() goPrev = new EventEmitter<boolean>();
-  @Output() goNext = new EventEmitter<boolean>();
-  @Output() goPage = new EventEmitter<number>();
+  @Input()
+  set size(val: number) {
+    this._size = val;
+    this.pages = this.calcPages();
+  }
+
+  get size(): number {
+    return this._size;
+  }
+
+  @Input()
+  set count(val: number) {
+    this._count = val;
+    this.pages = this.calcPages();
+  }
+
+  get count(): number {
+    return this._count;
+  }
+
+  @Input()
+  set page(val: number) {
+    this._page = val;
+    this.pages = this.calcPages();
+  }
+
+  get page(): number {
+    return this._page;
+  }
+
+  get totalPages(): number {
+    const count = this.size < 1 ? 1 : Math.ceil(this.count / this.size);
+    return Math.max(count || 0, 1);
+  }
+
+  @Output() change: EventEmitter<any> = new EventEmitter();
+
+  public _visiblePagesCount: number = 3;
+
+  @Input()
+  set visiblePagesCount(val: number) {
+    this._visiblePagesCount = val;
+    this.pages = this.calcPages();
+  }
+
+  get visiblePagesCount(): number {
+    return this._visiblePagesCount;
+  }
+
+  _count: number = 0;
+  _page: number = 1;
+  _size: number = 0;
+  pages: any;
+
   constructor() { }
 
-  getMin(): number {
-    return ((this.perPage * this.page) - this.perPage) + 1;
-  }
-
-  getMax(): number {
-    let max = this.perPage * this.page;
-    if (max > this.count) {
-      max = this.count;
-    }
-    return max;
-  }
-
-  onPage(n: number): void {
-    this.goPage.emit(n);
-  }
-
-  onPrev(): void {
-    this.goPrev.emit(true);
-  }
-
-  onNext(next: boolean): void {
-    this.goNext.emit(next);
-  }
-
-  totalPages(): number {
-    return Math.ceil(this.count / this.perPage) || 0;
-  }
-
-  lastPage(): boolean {
-    return this.perPage * this.page > this.count;
-  }
-
-  getPages(): number[] {
-    const c = Math.ceil(this.count / this.perPage);
-    const p = this.page || 1;
-    const pagesToShow = this.pagesToShow || 9;
-    const pages: number[] = [];
-    pages.push(p);
-    const times = pagesToShow - 1;
-    for (let i = 0; i < times; i++) {
-      if (pages.length < pagesToShow) {
-        if (Math.min.apply(null, pages) > 1) {
-          pages.push(Math.min.apply(null, pages) - 1);
-        }
-      }
-      if (pages.length < pagesToShow) {
-        if (Math.max.apply(null, pages) < c) {
-          pages.push(Math.max.apply(null, pages) + 1);
-        }
-      }
-    }
-    pages.sort((a, b) => a - b);
-    return pages;
-  }
-
+  
   ngOnInit() {
+  }
+
+  canPrevious(): boolean {
+    return this.page > 1;
+  }
+
+  canNext(): boolean {
+    return this.page < this.totalPages;
+  }
+
+  prevPage(): void {
+    this.selectPage(this.page - 1);
+  }
+
+  nextPage(): void {
+    this.selectPage(this.page + 1);
+  }
+
+  selectPage(page: number): void {
+    if (page > 0 && page <= this.totalPages && page !== this.page) {
+      this.page = page;
+
+      this.change.emit({
+        page
+      });
+    }
+  }
+
+  calcPages(page?: number): any[] {
+    const pages = [];
+    let startPage = 1;
+    let endPage = this.totalPages;
+    const maxSize = this.visiblePagesCount;
+    const isMaxSized = maxSize < this.totalPages;
+
+    page = page || this.page;
+
+    if (isMaxSized) {
+      startPage = page - Math.floor(maxSize / 2);
+      endPage = page + Math.floor(maxSize / 2);
+
+      if (startPage < 1) {
+        startPage = 1;
+        endPage = Math.min(startPage + maxSize - 1, this.totalPages);
+      } else if (endPage > this.totalPages) {
+        startPage = Math.max(this.totalPages - maxSize + 1, 1);
+        endPage = this.totalPages;
+      }
+    }
+
+    for (let num = startPage; num <= endPage; num++) {
+      pages.push({
+        number: num,
+        text: <string><any>num
+      });
+    }
+
+    return pages;
   }
 
 }

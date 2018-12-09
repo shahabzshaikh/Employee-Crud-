@@ -1,18 +1,40 @@
-<div class="pagination" *ngIf="count > 0">
-    <div class="description">
-      <span class="page-counts">{{ getMin() }} - {{ getMax() }} of {{ count }}</span>
-      <span class="page-totals">{{ totalPages() }} pages</span>
-    </div>
-    <div class="numbers">
-      <button class="link" (click)="onPrev()" [disabled]="page === 1 || loading" [ngClass]="{ 'disabled': page === 1 || loading }">&lt; Previous</button>
-      
-      <button
-        *ngFor="let pageNum of getPages()"
-        (click)="onPage(pageNum)"
-        [ngClass]="{'active': pageNum === page, 'disabled': loading}">{{ pageNum }}</button>
-  
-      <button class="link" (click)="onNext(true)" [disabled]="lastPage() || loading" [ngClass]="{ 'disabled': lastPage() || loading }">Next &gt;</button>
-    </div>
-  </div>
-
-  
+<ul class="pager">
+  <li [class.disabled]="!canPrevious()">
+    <a
+      href="javascript:void(0)"
+      (click)="selectPage(1)">
+      <i class="{{pagerPreviousIcon}}"></i>
+    </a>
+  </li>
+  <li [class.disabled]="!canPrevious()">
+    <a
+      href="javascript:void(0)"
+      (click)="prevPage()">
+      <i class="{{pagerLeftArrowIcon}}"></i>
+    </a>
+  </li>
+  <li
+    class="pages"
+    *ngFor="let pg of pages"
+    [class.active]="pg.number === page">
+    <a
+      href="javascript:void(0)"
+      (click)="selectPage(pg.number)">
+      {{pg.text}}
+    </a>
+  </li>
+  <li [class.disabled]="!canNext()">
+    <a
+      href="javascript:void(0)"
+      (click)="nextPage()">
+      <i class="{{pagerRightArrowIcon}}"></i>
+    </a>
+  </li>
+  <li [class.disabled]="!canNext()">
+    <a
+      href="javascript:void(0)"
+      (click)="selectPage(totalPages)">
+      <i class="{{pagerNextIcon}}"></i>
+    </a>
+  </li>
+</ul>

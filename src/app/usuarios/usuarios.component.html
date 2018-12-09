@@ -1,0 +1,13 @@
+<h1>Lista de Usuários</h1>
+
+<app-pagination
+    [page]="page"
+    [total]="total"
+    [totalPages]="totalPages"
+    (mudouPagina)="mudouPagina($event)">
+  <ul class="list-group">
+    <li class="list-group-item" 
+        *ngFor="let usuario of usuarios">{{ usuario.first_name }}</li>
+  </ul>  
+</app-pagination>
+<div *ngIf="observador | async as usr">{{ usr.data[0].first_name }}</div>
